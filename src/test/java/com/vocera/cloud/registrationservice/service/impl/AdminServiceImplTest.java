@@ -40,8 +40,10 @@ public class AdminServiceImplTest {
     @Autowired
     private AdminService adminService;
 
+    private long testOrganizationId;
+
     @BeforeAll
-    public void init(){
+    public void init() {
         LOGGER.info("Init for Admin service");
 
         Organization organization = new Organization();
@@ -60,21 +62,22 @@ public class AdminServiceImplTest {
         admin.setEmail("email@a.com");
         organization.setAdmin(admin);
 
-        Organization organization1 = organizationService.register(organization);
-        LOGGER.info("Org Id : "+organization1.getId());
+        Organization org = organizationService.register(organization);
+        testOrganizationId = org.getId();
+        LOGGER.info("Org Id : " + org.getId());
     }
 
     @Test
     public void findByOrganizationId() {
         LOGGER.info("Executing success test case for Finding an admin by organizationId.");
 
-        assertNotNull(adminService.findByOrganizationId(4l));
+        assertNotNull(adminService.findByOrganizationId(testOrganizationId));
     }
 
     @Test
     public void findById() {
         LOGGER.info("Executing success test case for Finding Admin by id.");
 
-        assertNotNull(adminService.findById(4l));
+        assertNotNull(adminService.findById(testOrganizationId));
     }
 }

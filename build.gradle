@@ -48,10 +48,12 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.4.2'
     testCompile 'org.junit.platform:junit-platform-commons:1.4.0'
-//    testCompile 'org.junit.platform:junit-platform-launcher:1.4.0'
 
     // H2
     testImplementation 'com.h2database:h2:1.4.199'
+
+    // Gson
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
 
 test {

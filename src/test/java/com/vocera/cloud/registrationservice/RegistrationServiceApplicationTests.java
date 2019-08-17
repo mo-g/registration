@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @SpringBootTest
 public class RegistrationServiceApplicationTests {
 
+
     @Test
     public void contextLoads() {
     }

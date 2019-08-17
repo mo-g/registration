@@ -7,6 +7,8 @@
 package com.vocera.cloud.registrationservice.service;
 
 import com.vocera.cloud.coremodel.model.Organization;
+import com.vocera.cloud.coremodel.model.PageResponse;
+import org.springframework.data.domain.Sort;
 
 /**
  * Organization Service.
@@ -38,4 +40,17 @@ public interface OrganizationService {
      * @return
      */
     Organization register(Organization organization);
+
+    /**
+     * Service for filtering and paginating of an organization.
+     *
+     * @param page
+     * @param offset
+     * @param query
+     * @param sort
+     * @param order
+     * @return
+     */
+    PageResponse<Organization> filterOrganization(int page, int offset, String query, String sort,
+                                                  Sort.Direction order);
 }

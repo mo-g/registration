@@ -8,21 +8,22 @@ package com.vocera.cloud.registrationservice.service.impl;
 
 import com.vocera.cloud.coremodel.model.Admin;
 import com.vocera.cloud.coremodel.model.Organization;
+import com.vocera.cloud.coremodel.model.PageResponse;
 import com.vocera.cloud.registrationservice.exception.RecordNotFoundException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.logging.Logger;
-
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,8 +39,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @TestMethodOrder(OrderAnnotation.class)
 public class OrganizationServiceImplTest {
 
-    private static final Logger LOGGER = Logger.getLogger(OrganizationServiceImplTest.class.getName());
-
     @Autowired
     private OrganizationServiceImpl organizationService;
 
@@ -48,7 +47,7 @@ public class OrganizationServiceImplTest {
      */
     @BeforeAll
     public void init() {
-        LOGGER.info("Initializing test cases with an Organization.");
+        System.out.println("Initializing test cases with an Organization.");
         Organization organization = new Organization();
         organization.setName("Organization1");
         organization.setHealthSystemName("Health System 1");
@@ -73,8 +72,8 @@ public class OrganizationServiceImplTest {
      */
     @Order(1)
     @Test
-    public void successfulRegistration(){
-        LOGGER.info("Executing test case for Successful Registration");
+    public void successfulRegistration() {
+        System.out.println("Executing test case for Successful Registration");
 
         Organization organization = new Organization();
         organization.setName("Organization2");
@@ -100,8 +99,9 @@ public class OrganizationServiceImplTest {
      */
     @Order(2)
     @Test
-    public void duplicateNameAndHealthSystemName(){
-        LOGGER.info("Executing failure test case for Duplicate Organization and Health System Name combination while Registration");
+    public void duplicateNameAndHealthSystemName() {
+        System.out.println("Executing failure test case for Duplicate Organization and Health System Name combination" +
+                " while Registration");
 
         Organization organization = new Organization();
         organization.setName("Organization2");
@@ -130,7 +130,7 @@ public class OrganizationServiceImplTest {
     @Order(3)
     @Test
     public void checkValidLicenseKey() {
-        LOGGER.info("Executing Test for Valid License Key");
+        System.out.println("Executing Test for Valid License Key");
         Organization organization = organizationService.findByLicenseKey("1234");
         assertTrue(organization != null);
     }
@@ -141,9 +141,9 @@ public class OrganizationServiceImplTest {
     @Order(4)
     @Test
     public void checkInvalidLicenseKey() {
-        LOGGER.info("Executing Test for Invalid License Key");
+        System.out.println("Executing Test for Invalid License Key");
         assertThrows(RecordNotFoundException.class, () -> {
-           organizationService.findByLicenseKey("12345");
+            organizationService.findByLicenseKey("4321");
         });
     }
 
@@ -153,7 +153,7 @@ public class OrganizationServiceImplTest {
     @Order(5)
     @Test
     public void validFindById() {
-        LOGGER.info("Executing Test for Valid findById");
+        System.out.println("Executing Test for Valid findById");
         assertNotNull(organizationService.findById(1l));
     }
 
@@ -163,10 +163,44 @@ public class OrganizationServiceImplTest {
     @Order(6)
     @Test
     public void invalidFindById() {
-        LOGGER.info("Executing Test for Invalid findById");
+        System.out.println("Executing Test for Invalid findById");
         assertThrows(RecordNotFoundException.class, () -> {
             organizationService.findById(10l);
         });
+    }
+
+    @Test
+    public void filterOrganization() {
+        System.out.println("Executing test case for default pagination through organization.");
+        PageResponse<Organization> response = organizationService.filterOrganization(0, 1, "",
+                "name", Sort.Direction.ASC);
+        assertNotNull(response);
+        assertNotNull(response.getData());
+        assertTrue(response.getData().size() > 0);
+    }
+
+    @Test
+    public void searchOrganizationByName() {
+        System.out.println("Executing test case for searching Organization Name through organization.");
+        String organizationName = "Organization1";
+        PageResponse<Organization> response = organizationService.filterOrganization(0, 1, organizationName,
+                "name", Sort.Direction.ASC);
+        assertNotNull(response);
+        assertNotNull(response.getData());
+        assertTrue(response.getData().size() > 0);
+        assertEquals(organizationName, response.getData().get(0).getName());
+    }
+
+    @Test
+    public void searchOrganizationByHealthSystemName() {
+        System.out.println("Executing test case for searching Organization Name through organization.");
+        String healthSystemName = "Health System 1";
+        PageResponse<Organization> response = organizationService.filterOrganization(0, 1,
+                healthSystemName, "name", Sort.Direction.ASC);
+        assertNotNull(response);
+        assertNotNull(response.getData());
+        assertTrue(response.getData().size() > 0);
+        assertEquals(healthSystemName, response.getData().get(0).getHealthSystemName());
     }
 
 }
