@@ -89,6 +89,39 @@ public class OrganizationControllerTest {
                 .andExpect(status().isOk());
     }
 
+    @Test
+    @Order(7)
+    public void failureNameRegisterOrganization() throws Exception {
+        System.out.println("Executing failure test case for same name and health system name while registering an organization on federation network.");
+
+        Organization organization = new Organization();
+        organization.setName("Organization");
+        organization.setHealthSystemName("Sample Health System name");
+        organization.setAddressLine1("Address Line 1");
+        organization.setState("Maharashtra");
+        organization.setCity("Mumbai");
+        organization.setDomain("www.domain.com");
+        organization.setLicenseKey("123456");
+
+        Admin admin = new Admin();
+        admin.setTitle("Admin Title");
+        admin.setPhone("12345687890");
+        admin.setName("Admin Name");
+        admin.setEmail("email@a.com");
+        organization.setAdmin(admin);
+
+        Gson gson = new Gson();
+
+        MvcResult response = mockMvc.perform(post("/organization").content(gson.toJson(organization))
+                .contentType("application/json"))
+                .andExpect(status().is4xxClientError()).andReturn();
+
+        JsonObject objResponse = gson.fromJson(response.getResponse().getContentAsString(), JsonObject.class);
+        assertEquals("Error processing request", objResponse.get("message").getAsString());
+        assertEquals(DataIntegrityViolationException.class, response.getResolvedException().getClass());
+        System.out.println(response.getResolvedException().toString());
+    }
+
     /**
      * Failure test case for registration.
      *

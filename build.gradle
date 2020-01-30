@@ -2,10 +2,12 @@ plugins {
     id 'org.springframework.boot' version '2.1.6.RELEASE'
     id 'java'
     id 'maven'
+    id 'jacoco'
 }
 
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'maven'
+apply plugin: "jacoco"
 
 group = 'com.vocera.cloud'
 version = '0.0.1-SNAPSHOT'
@@ -58,4 +60,18 @@ dependencies {
 
 test {
     useJUnitPlatform ()
+}
+
+
+jacoco {
+    toolVersion = "0.8.4"
+    reportsDir = file("${buildDir}/customJacocoReportDir")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
 }
